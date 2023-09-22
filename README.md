@@ -17,21 +17,21 @@ I'm a passionate Full Stack Developer with expertise in React, JavaScript, TypeS
 <!-- Projects -->
 ## 🚀 Featured Projects:
 
-### Project 1: [Volopa]([Project Link](https://business.volopa.com/user/login.html))
+### Project 1: Volopa ([Project Link](https://business.volopa.com/user/login.html))
    React.js, PHP, Ant Design.
    Founded in 2011, Volopa was one of the UK’s first innovators in the international payments,
    foreign exchange, and prepaid cards space. We are dedicated to growth and constantly
    evolving our technology to provide better solutions for you.
 
 
-### Project 2: [Eclipse AI]([Project Link](https://eclipse-ai.com/))
+### Project 2: Eclipse AI ([Project Link](https://eclipse-ai.com/))
    React.js, Node.js, CloudFlare.
    Eclipse AI is a generative AI platform empowers customer experience teams who strive to
    enhance customer satisfaction and retention. With Eclipse AI, you can unify and analyze
    all your omnichannel voice-of-customer data, effortlessly extracting valuable insights and
    actionable intelligence to predict and prevent churn
 
-### Project 2: [TopTech - Truck Management System]([Project Link](https://toptech.com/))
+### Project 2: TopTech - Truck Management System ([Project Link](https://toptech.com/))
    React.js, PHP, Material UI.
    Toptech Systems is a global industry leader in automation and data management services.
    All of our products are designed in-house allowing us to provide excellent customer service
@@ -48,7 +48,7 @@ I'm a passionate Full Stack Developer with expertise in React, JavaScript, TypeS
 <!-- Fun Section (Optional) -->
 ## ⚡ Fun Fact:
 
-Did you know that I'm also a [hobbyist photographer](Link to your photography portfolio)? 📸
+Did you know that I'm also a hobbyist photographer 📸
 
 <!-- Visitors Counter (Optional) -->
 ![Profile Views](https://komarev.com/ghpvc/?username=therizwan)
