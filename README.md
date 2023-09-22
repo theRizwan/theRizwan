@@ -6,38 +6,45 @@ I'm a passionate Full Stack Developer with expertise in React, JavaScript, TypeS
 <!-- Technologies -->
 ## 💻 Technologies I Work With:
 
-- **Frontend**: React, HTML, CSS, JavaScript
+- **Frontend**: React, HTML, CSS, JavaScript, NextJs
 - **Backend**: Node.js, PHP
-- **State Management**: Zustand
+- **State Management**: Zustand, Redux
 - **Databases**: MongoDB, PostgreSQL, MySQL
-- **DevOps**: Docker
+- **DevOps**: Docker, Ansible, Terraform
 - **Cloud Services**: AWS, Azure
-- **Operating Systems**: Linux
+- **Operating Systems**: Linux, Mac, Windows
 
 <!-- Projects -->
 ## 🚀 Featured Projects:
 
-### Project 1: Volopa ([Project Link](https://business.volopa.com/user/login.html))
+### Project: Volopa ([Project Link](https://business.volopa.com/user/login.html))
    React.js, PHP, Ant Design.
    Founded in 2011, Volopa was one of the UK’s first innovators in the international payments,
    foreign exchange, and prepaid cards space. We are dedicated to growth and constantly
    evolving our technology to provide better solutions for you.
 
 
-### Project 2: Eclipse AI ([Project Link](https://eclipse-ai.com/))
+### Project: Eclipse AI ([Project Link](https://eclipse-ai.com/))
    React.js, Node.js, CloudFlare.
    Eclipse AI is a generative AI platform empowers customer experience teams who strive to
    enhance customer satisfaction and retention. With Eclipse AI, you can unify and analyze
    all your omnichannel voice-of-customer data, effortlessly extracting valuable insights and
    actionable intelligence to predict and prevent churn
 
-### Project 2: TopTech - Truck Management System ([Project Link](https://toptech.com/))
+### Project: TopTech - Truck Management System ([Project Link](https://toptech.com/))
    React.js, PHP, Material UI.
    Toptech Systems is a global industry leader in automation and data management services.
    All of our products are designed in-house allowing us to provide excellent customer service
    to our clients at all levels of the supply chain. At Toptech Systems, we’ve built a global
    reputation in the high value fluids industry for not only providing the best product but for
    doing it with a spirit of excellence.
+
+### Project: Stretto - Trust Works ([Project Link](https://stretto.com/))
+   React.js, .Net, Material UI.](https://stretto.com/)
+   Stretto has a long history in the consumer-bankruptcy and corporate-restructuring industries. Building on a rich banking legacy, the company expanded its financial-institution
+   network and grew its internal team to include more members with broader finance,
+   bankruptcy, and fiduciary expertise. Stretto is proud to be a leading services partner to
+   industry professionals.
 
 <!-- Connect with Me -->
 ## 🌐 Connect with Me:
