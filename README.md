@@ -17,16 +17,27 @@ I'm a passionate Full Stack Developer with expertise in React, JavaScript, TypeS
 <!-- Projects -->
 ## 🚀 Featured Projects:
 
-### Project 1: [Project Name](Link to the GitHub repo)
-   Description of the project goes here. Highlight key features and technologies used.
+### Project 1: [Volopa]([Project Link](https://business.volopa.com/user/login.html))
+   React.js, PHP, Ant Design.
+   Founded in 2011, Volopa was one of the UK’s first innovators in the international payments,
+   foreign exchange, and prepaid cards space. We are dedicated to growth and constantly
+   evolving our technology to provide better solutions for you.
 
-### Project 2: [Project Name](Link to the GitHub repo)
-   Description of the project goes here. Highlight key features and technologies used.
 
-<!-- GitHub Stats -->
-## 📈 GitHub Stats:
+### Project 2: [Eclipse AI]([Project Link](https://eclipse-ai.com/))
+   React.js, Node.js, CloudFlare.
+   Eclipse AI is a generative AI platform empowers customer experience teams who strive to
+   enhance customer satisfaction and retention. With Eclipse AI, you can unify and analyze
+   all your omnichannel voice-of-customer data, effortlessly extracting valuable insights and
+   actionable intelligence to predict and prevent churn
 
-[![GitHub Stats](https://github-readme-stats.vercel.app/api?username=YourGitHubUsername&show_icons=true&theme=radical)](https://github.com/anuraghazra/github-readme-stats)
+### Project 2: [TopTech - Truck Management System]([Project Link](https://toptech.com/))
+   React.js, PHP, Material UI.
+   Toptech Systems is a global industry leader in automation and data management services.
+   All of our products are designed in-house allowing us to provide excellent customer service
+   to our clients at all levels of the supply chain. At Toptech Systems, we’ve built a global
+   reputation in the high value fluids industry for not only providing the best product but for
+   doing it with a spirit of excellence.
 
 <!-- Connect with Me -->
 ## 🌐 Connect with Me:
