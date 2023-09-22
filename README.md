@@ -1,5 +1,5 @@
 <!-- Introduction -->
-# Hello, I'm [Your Name] 👋
+# Hello, I'm Rizwan 👋
 
 I'm a passionate Full Stack Developer with expertise in React, JavaScript, TypeScript, and a range of other technologies. I love building web applications and exploring new ways to solve complex problems.
 
