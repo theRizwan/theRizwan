@@ -1,78 +1,55 @@
-<!-- Introduction -->
-# Hello, I'm Rizwan 👋
+# Rizwan Saleem
 
-I'm a passionate Full Stack Developer with expertise in React, JavaScript, TypeScript, and a range of other technologies. I love building web applications and exploring new ways to solve complex problems.
+Senior Frontend Engineer at [Horsefly Analytics](https://horseflyanalytics.com), Manchester. I build
+production TypeScript and React for a labour-market analytics platform, and I work on the AWS and
+AI-agent infrastructure behind it.
 
-<!-- Technologies -->
-## 💻 Technologies I Work With:
+Most of what I enjoy is the unglamorous half: parser edge cases, streaming protocols, the failure modes
+that only show up under real input.
 
-- **Frontend**: React, HTML, CSS, JavaScript, NextJs
-- **Backend**: Node.js, PHP
-- **State Management**: Zustand, Redux
-- **Databases**: MongoDB, PostgreSQL, MySQL
-- **DevOps**: Docker, Ansible, Terraform
-- **Cloud Services**: AWS, Azure
-- **Operating Systems**: Linux, Mac, Windows
+## Open source
 
-<!-- Projects -->
-## 🚀 Featured Projects:
+I contribute fixes upstream to packages the JavaScript ecosystem depends on.
 
-### Project: Volopa ([Project Link](https://business.volopa.com/user/login.html))
-   React.js, PHP, Ant Design.
-   Founded in 2011, Volopa was one of the UK’s first innovators in the international payments,
-   foreign exchange, and prepaid cards space. We are dedicated to growth and constantly
-   evolving our technology to provide better solutions for you.
+**Merged**
 
+- [`postcss/postcss-selector-parser#330`](https://github.com/postcss/postcss-selector-parser/pull/330) —
+  fixed a `TypeError` thrown on unclosed `[`, `(` and trailing `|` instead of the parser's own error.
+  Shipped in [`7.1.5`](https://www.npmjs.com/package/postcss-selector-parser/v/7.1.5).
+- [`corsairdev/corsair#111`](https://github.com/corsairdev/corsair/pull/111) — improved the Telegram
+  integration plugin.
 
-### Project: Eclipse AI ([Project Link](https://eclipse-ai.com/))
-   React.js, Node.js, CloudFlare.
-   Eclipse AI is a generative AI platform empowers customer experience teams who strive to
-   enhance customer satisfaction and retention. With Eclipse AI, you can unify and analyze
-   all your omnichannel voice-of-customer data, effortlessly extracting valuable insights and
-   actionable intelligence to predict and prevent churn
+**Open**
 
-### Project: TopTech - Truck Management System ([Project Link](https://toptech.com/))
-   React.js, PHP, Material UI.
-   Toptech Systems is a global industry leader in automation and data management services.
-   All of our products are designed in-house allowing us to provide excellent customer service
-   to our clients at all levels of the supply chain. At Toptech Systems, we’ve built a global
-   reputation in the high value fluids industry for not only providing the best product but for
-   doing it with a spirit of excellence.
+- [`postcss/postcss-selector-parser#335`](https://github.com/postcss/postcss-selector-parser/pull/335) —
+  attribute selectors with no valid attribute name threw a raw `TypeError`, or emitted the literal string
+  `undefined` into CSS. Verified against 43,200 generated selectors: zero regressions.
+- Fixes pending review in `hast-util-from-parse5`, `eslint-plugin-import`, `stacktrace-parser` and
+  `xml-js`.
 
-### Project: Stretto - Trust Works ([Project Link](https://stretto.com/))
-   React.js, .Net, Material UI.](https://stretto.com/)
-   Stretto has a long history in the consumer-bankruptcy and corporate-restructuring industries. Building on a rich banking legacy, the company expanded its financial-institution
-   network and grew its internal team to include more members with broader finance,
-   bankruptcy, and fiduciary expertise. Stretto is proud to be a leading services partner to
-   industry professionals.
+## Packages
 
-<!-- Connect with Me -->
-## 🌐 Connect with Me:
+[![llm-guard](https://img.shields.io/npm/dm/llm-guard?label=llm-guard)](https://www.npmjs.com/package/llm-guard)
+[![bedrock-ui-stream](https://img.shields.io/npm/dm/bedrock-ui-stream?label=bedrock-ui-stream)](https://www.npmjs.com/package/bedrock-ui-stream)
 
-- [Portfolio](https://therizwan.vercel.app)
-- [LinkedIn](https://linkedin.com/in/therizwansaleem)
+- **[llm-guard](https://www.npmjs.com/package/llm-guard)** — validating and securing LLM prompts, in
+  TypeScript.
+- **[bedrock-ui-stream](https://www.npmjs.com/package/bedrock-ui-stream)** — bridges AWS Bedrock Agent
+  Runtime event streams to the Vercel AI SDK UI message stream protocol. Handles the parts that bite:
+  chunk boundaries splitting multi-byte characters, partial tool-call state, and redaction on the error
+  path.
 
-<!-- Fun Section (Optional) -->
-## ⚡ Fun Fact:
+## Background
 
-Did you know that I'm also a hobbyist photographer 📸
+- MSc Computer Science, Manchester Metropolitan University
+- AWS Certified Solutions Architect
+- Cyber Runway Launch 2024 — the DSIT-funded national cyber accelerator delivered by Plexal
+- Volunteer mentor, Manchester Metropolitan University
 
-<!-- Visitors Counter (Optional) -->
-![Profile Views](https://komarev.com/ghpvc/?username=therizwan)
+## Working with
 
-<!-- Footer -->
-## 📝 Let's Collaborate!
+TypeScript · JavaScript · React · Next.js · Node.js · AWS · PostgreSQL · Docker · Terraform
 
-I'm always open to exciting new projects and opportunities. Feel free to reach out to me if you'd like to work together or just chat about tech!
+## Elsewhere
 
-<!-- Contributions (Optional) -->
-## ❤️ Contributions
-
-If you find my projects or contributions helpful, consider buying me a coffee!
-
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-%23FFDD00)](Your-Buy-Me-a-Coffee-Link)
-
-
-<img align="left" src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white" />
-<img align="left" src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" />
-<img align="left" src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" />
+[Website](https://rizwansaleem.co) · [LinkedIn](https://linkedin.com/in/therizwansaleem)
