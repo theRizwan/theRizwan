@@ -29,6 +29,17 @@ reproduced, traced to a root cause, and verified against a differential build be
 
 **In review**
 
+- [`Shopify/flash-list#2444`](https://github.com/Shopify/flash-list/pull/2444) — `initialScrollIndex`
+  opened the list on the wrong item whenever rows were taller than the 200px the layout manager seeds
+  unmeasured items with. The corrective pass recomputes positions only as far as the target index, so the
+  rows after it keep positions derived from the stale estimate and the layout array stops being sorted at
+  that boundary. The binary search over it then returns an item nowhere near the one asked for: requesting
+  index 250 renders item 333. Reproduced in the project's own Jest harness, then fixed in one line plus a
+  regression test that fails on `main`. A P1 open since June, in a package with ~7M downloads a month.
+- [`expo/expo#48960`](https://github.com/expo/expo/pull/48960) — a rule for `eslint-plugin-expo` catching
+  credentials held in `EXPO_PUBLIC_` environment variables, which are inlined into the app bundle in plain
+  text and readable by anyone with the app. Matches on `_` separated name segments rather than substrings,
+  so `EXPO_PUBLIC_AUTHORITY` and `EXPO_PUBLIC_MONKEY` stay quiet.
 - [`shadcn-ui/ui#11463`](https://github.com/shadcn-ui/ui/pull/11463) — the Tailwind prefix transform
   rebuilt class literals as quoted source text by hand, so the step that stripped the delimiters also
   stripped every quote *inside* the class value. `[stroke='#fff']` became `[stroke=#fff]`, which is not
@@ -54,10 +65,29 @@ reproduced, traced to a root cause, and verified against a differential build be
 
 - **[llm-guard](https://www.npmjs.com/package/llm-guard)** — validating and securing LLM prompts, in
   TypeScript.
+- **[react-native-virtual-list](https://www.npmjs.com/package/react-native-virtual-list)** — a virtualized
+  list that holds its scroll position when item heights are only known after they render. Item offsets are
+  prefix sums over a Fenwick tree rather than a position array that gets partially rebuilt, which makes
+  them non-decreasing by construction and rules out the class of bug above. Aimed at react-native-web,
+  which does not implement `maintainVisibleContentPosition` at all.
 - **[bedrock-ui-stream](https://www.npmjs.com/package/bedrock-ui-stream)** — bridges AWS Bedrock Agent
   Runtime event streams to the Vercel AI SDK UI message stream protocol. Handles the parts that bite:
   chunk boundaries splitting multi-byte characters, partial tool-call state, and redaction on the error
   path.
+
+**Lint rules for React Native.** General JavaScript linters do not know what a `WebView` is, that
+`AsyncStorage` writes to disk unencrypted, or that a `FlatList` inside a `ScrollView` renders every row.
+These cover only that gap, and each rule is statically detectable rather than heuristic where it can be.
+
+- **[eslint-plugin-rn-security](https://www.npmjs.com/package/eslint-plugin-rn-security)** — unsafe
+  `WebView` configuration, credentials in `AsyncStorage`, cleartext endpoints, unvalidated deep links, and
+  credentials written to the device log.
+- **[eslint-plugin-react-native-performance](https://www.npmjs.com/package/eslint-plugin-react-native-performance)**
+  — nested virtualized lists, lists inside a `ScrollView`, missing and index-based `keyExtractor`, and
+  props rebuilt inline on every render.
+- **[eslint-plugin-react-native-platform](https://www.npmjs.com/package/eslint-plugin-react-native-platform)**
+  — platform-specific APIs called without a guard, styles that only exist on one platform, and
+  `Platform.select` with keys that will never match.
 
 ## Background
 
