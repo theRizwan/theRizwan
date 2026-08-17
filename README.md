@@ -9,8 +9,9 @@ that only show up under real input.
 
 ## Open source
 
-I contribute fixes upstream to packages the JavaScript ecosystem depends on. Each one below is a bug I
-reproduced, traced to a root cause, and verified against a differential build before opening.
+I contribute fixes upstream to packages the JavaScript ecosystem depends on. Most of these I found and
+traced myself, reproduced, and verified against a differential build before opening; where the diagnosis
+was someone else's I say so and the contribution is the fix and the test.
 
 **Merged and released**
 
@@ -29,13 +30,14 @@ reproduced, traced to a root cause, and verified against a differential build be
 
 **In review**
 
-- [`Shopify/flash-list#2444`](https://github.com/Shopify/flash-list/pull/2444) — `initialScrollIndex`
-  opened the list on the wrong item whenever rows were taller than the 200px the layout manager seeds
-  unmeasured items with. The corrective pass recomputes positions only as far as the target index, so the
-  rows after it keep positions derived from the stale estimate and the layout array stops being sorted at
-  that boundary. The binary search over it then returns an item nowhere near the one asked for: requesting
-  index 250 renders item 333. Reproduced in the project's own Jest harness, then fixed in one line plus a
-  regression test that fails on `main`. A P1 open since June, in a package with ~7M downloads a month.
+- [`Shopify/flash-list#2444`](https://github.com/Shopify/flash-list/pull/2444) — the fix and the
+  regression test for a P1 open since June. The diagnosis is not mine: the reporter of
+  [#2307](https://github.com/Shopify/flash-list/issues/2307) traced it in full, down to the corrective
+  pass recomputing positions only as far as `initialScrollIndex` and leaving the rows after it on stale
+  estimates, which breaks the sort order the visible-range binary search relies on. What I added was the
+  one-line fix and, the harder half, a test that pins the race down deterministically: mocked measurement
+  forcing 300px rows above the 200px seed, a single-item draw batch and zero draw distance, asserting item
+  250 renders and item 333 does not. It fails on `main`. ~7M downloads a month.
 - [`expo/expo#48960`](https://github.com/expo/expo/pull/48960) — a rule for `eslint-plugin-expo` catching
   credentials held in `EXPO_PUBLIC_` environment variables, which are inlined into the app bundle in plain
   text and readable by anyone with the app. Matches on `_` separated name segments rather than substrings,
