@@ -22,6 +22,13 @@ was someone else's I say so and the contribution is the fix and the test.
   unmodified source. Verified across 5,076 generated inputs: 2,540 identity violations fixed, zero
   regressions. Shipped in
   [`0.23.20`](https://www.npmjs.com/package/recast/v/0.23.20) — a package with ~139M downloads a month.
+- [`Rich-Harris/magic-string#326`](https://github.com/Rich-Harris/magic-string/pull/326) — two `move()`
+  calls whose ranges overlapped spliced a chunk's `next` pointer to itself, so the list became a cycle and
+  every later `toString()` or `generateMap()` spun forever on valid, in-bounds arguments. No error, just a
+  hung build. Added the ordering check that throws instead, skipped behind a flag so a first move keeps
+  costing nothing, and carried the flag through `clone()` since a clone inherits the reordering and hung
+  the same way. Shipped in [`1.2.1`](https://www.npmjs.com/package/magic-string/v/1.2.1) — ~716M downloads
+  a month, and the source-manipulation layer inside Vite and Rollup.
 - [`postcss/postcss-selector-parser#330`](https://github.com/postcss/postcss-selector-parser/pull/330) —
   unclosed `[`, `(` and a trailing `|` threw a raw `TypeError` instead of the parser's own error. Shipped
   in [`7.1.5`](https://www.npmjs.com/package/postcss-selector-parser/v/7.1.5) — ~574M downloads a month.
