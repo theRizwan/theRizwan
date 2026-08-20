@@ -21,19 +21,39 @@ was someone else's I say so and the contribution is the fix and the test.
   emitted a second pair. This broke recast's own documented `print(parse(source)) === source` identity on
   unmodified source. Verified across 5,076 generated inputs: 2,540 identity violations fixed, zero
   regressions. Shipped in
-  [`0.23.20`](https://www.npmjs.com/package/recast/v/0.23.20) — a package with ~139M downloads a month.
+  [`0.23.20`](https://www.npmjs.com/package/recast/v/0.23.20) — a package with ~148M downloads a month.
 - [`Rich-Harris/magic-string#326`](https://github.com/Rich-Harris/magic-string/pull/326) — two `move()`
   calls whose ranges overlapped spliced a chunk's `next` pointer to itself, so the list became a cycle and
   every later `toString()` or `generateMap()` spun forever on valid, in-bounds arguments. No error, just a
   hung build. Added the ordering check that throws instead, skipped behind a flag so a first move keeps
   costing nothing, and carried the flag through `clone()` since a clone inherits the reordering and hung
-  the same way. Shipped in [`1.2.1`](https://www.npmjs.com/package/magic-string/v/1.2.1) — ~716M downloads
+  the same way. Shipped in [`1.2.1`](https://www.npmjs.com/package/magic-string/v/1.2.1) — ~740M downloads
   a month, and the source-manipulation layer inside Vite and Rollup.
+- [`Rich-Harris/magic-string#331`](https://github.com/Rich-Harris/magic-string/pull/331) — a `hasChanged()`
+  optimisation merged that morning compared each edited chunk against its own slice of the original, which
+  assumes a chunk's content replaces its own range. An overwrite spanning several chunks stores the whole
+  replacement on the first chunk and empties the rest, so `hasChanged()` reported a change on strings
+  byte-identical to the input. Found by checking the new implementation differentially against the one it
+  replaced over 20,880 generated operation sequences: 775 disagreed, every one a false positive, none after
+  the fix. Shipped in [`1.2.2`](https://www.npmjs.com/package/magic-string/v/1.2.2), cut minutes after the
+  merge, so the regression never reached a published version.
 - [`postcss/postcss-selector-parser#330`](https://github.com/postcss/postcss-selector-parser/pull/330) —
   unclosed `[`, `(` and a trailing `|` threw a raw `TypeError` instead of the parser's own error. Shipped
-  in [`7.1.5`](https://www.npmjs.com/package/postcss-selector-parser/v/7.1.5) — ~574M downloads a month.
+  in [`7.1.5`](https://www.npmjs.com/package/postcss-selector-parser/v/7.1.5) — ~590M downloads a month.
 - [`corsairdev/corsair#111`](https://github.com/corsairdev/corsair/pull/111) — improved the Telegram
   integration plugin.
+
+**Merged, not yet in a release**
+
+- [`import-js/eslint-plugin-import`](https://github.com/import-js/eslint-plugin-import/commit/7828a5f7d98f4d49e39bd6b8028f98fd0d562b48)
+  — `no-cycle` dereferenced a null strongly-connected-components graph when the linted file's own path does
+  not resolve, which aborts the whole lint run with a `TypeError`. That happens for an unsaved editor buffer
+  (`eslint --stdin --stdin-filename=not-yet-written.js`, `ESLint#lintText`) and for resolvers that cannot
+  resolve absolute paths. Rather than fall back to the exhaustive traversal, the graph is built rooted at
+  the imported module and cached, so the common case skips the work entirely. Landed on `main` as
+  [`7828a5f`](https://github.com/import-js/eslint-plugin-import/commit/7828a5f7d98f4d49e39bd6b8028f98fd0d562b48);
+  the pull request it came from reads as closed because the maintainer landed the commit directly rather
+  than merging the branch. ~246M downloads a month, unreleased as of the latest tag.
 
 **In review**
 
@@ -54,6 +74,23 @@ was someone else's I say so and the contribution is the fix and the test.
   stripped every quote *inside* the class value. `[stroke='#fff']` became `[stroke=#fff]`, which is not
   valid CSS, so the browser silently discarded the rule. Found by reading the CLI source rather than from
   a bug report. Verified over all 1,435 registry components: 1,404 byte-identical, zero regressions.
+- [`benjamn/recast#1442`](https://github.com/benjamn/recast/pull/1442) — `??` cannot be combined with `||`
+  or `&&` without parentheses, because the `CoalesceExpression` production admits only
+  `BitwiseORExpression` operands. recast decided parentheses by operator precedence, which covers a `??`
+  nested inside `||` but never a `||` nested inside `??`, so printing a `??` whose operand was a `||` or
+  `&&` emitted four shapes that are outright `SyntaxError`s. The report is someone else's; the cause and
+  the fix are mine. Every printed form now round-trips through `new Function`, and a second test locks in
+  that `??` beside a non-logical operator is still left alone.
+- [`benjamn/recast#1441`](https://github.com/benjamn/recast/pull/1441) — `lib/parser.ts` passed a literal
+  `ecmaVersion: 6` into every parser while reading each neighbouring value from the caller's options, which
+  silently overrode the acorn parser's own default. The acorn setup shown in recast's own README therefore
+  rejected object spread, `**`, `async`/`await` and optional catch binding. Now read from the options like
+  the values either side of it, and added to `Options` so it is typed and documented rather than reaching
+  some parsers by accident.
+- [`webpro-nl/knip#1960`](https://github.com/webpro-nl/knip/pull/1960) — exposes `defineConfig` on a
+  `./config` entrypoint, so a config file can import it without the side effects of parsing the index
+  module. The separate-entrypoint design is not mine: a commenter on the issue proposed it, with a reason
+  neither of the two options I had offered covered. ~53M downloads a month.
 - [`postcss/postcss-selector-parser#335`](https://github.com/postcss/postcss-selector-parser/pull/335) —
   attribute selectors with no valid attribute name threw a raw `TypeError`, or emitted the literal string
   `undefined` into CSS. Verified against 43,200 generated selectors.
@@ -62,7 +99,6 @@ was someone else's I say so and the contribution is the fix and the test.
 - [`postcss/postcss-selector-parser#337`](https://github.com/postcss/postcss-selector-parser/pull/337) —
   lossless mode dropped trailing whitespace when a selector ended before any node was created.
 - Fixes also pending review in [`hast-util-from-parse5`](https://github.com/syntax-tree/hast-util-from-parse5/pull/16),
-  [`eslint-plugin-import`](https://github.com/import-js/eslint-plugin-import/pull/3287),
   [`stacktrace-parser`](https://github.com/errwischt/stacktrace-parser/pull/50),
   [`xml-js`](https://github.com/nashwaan/xml-js/pull/224) and
   [`eslint-plugin-react-native`](https://github.com/Intellicode/eslint-plugin-react-native/pull/342).
