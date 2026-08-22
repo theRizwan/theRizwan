@@ -45,6 +45,21 @@ was someone else's I say so and the contribution is the fix and the test.
 
 **Merged, not yet in a release**
 
+- [`benjamn/recast#1442`](https://github.com/benjamn/recast/pull/1442) — `??` cannot be combined with `||`
+  or `&&` without parentheses, because the `CoalesceExpression` production admits only
+  `BitwiseORExpression` operands. recast decided parentheses by operator precedence, which covers a `??`
+  nested inside `||` but never a `||` nested inside `??`, so printing a `??` whose operand was a `||` or
+  `&&` emitted four shapes that are outright `SyntaxError`s. The report is someone else's; the cause and
+  the fix are mine. Every printed form now round-trips through `new Function`, and a second test locks in
+  that `??` beside a non-logical operator is still left alone. Merged 21 August, after
+  [`0.24.0`](https://www.npmjs.com/package/recast/v/0.24.0) was published, so it sits on `master` and is
+  not yet in a release.
+- [`benjamn/recast#1441`](https://github.com/benjamn/recast/pull/1441) — `lib/parser.ts` passed a literal
+  `ecmaVersion: 6` into every parser while reading each neighbouring value from the caller's options, which
+  silently overrode the acorn parser's own default. The acorn setup shown in recast's own README therefore
+  rejected object spread, `**`, `async`/`await` and optional catch binding. Now read from the options like
+  the values either side of it, and added to `Options` so it is typed and documented rather than reaching
+  some parsers by accident. Merged the same day as #1442, in the same unreleased window.
 - [`import-js/eslint-plugin-import`](https://github.com/import-js/eslint-plugin-import/commit/7828a5f7d98f4d49e39bd6b8028f98fd0d562b48)
   — `no-cycle` dereferenced a null strongly-connected-components graph when the linted file's own path does
   not resolve, which aborts the whole lint run with a `TypeError`. That happens for an unsaved editor buffer
@@ -57,6 +72,17 @@ was someone else's I say so and the contribution is the fix and the test.
 
 **In review**
 
+- [`Rich-Harris/magic-string#335`](https://github.com/Rich-Harris/magic-string/pull/335) — `replace` and
+  `replaceAll` gathered matches by driving `exec` in a `while (true)` loop, and a zero-length match does not
+  advance `lastIndex`, so any global regexp that can match the empty string rematched at the same index
+  until the process ran out of memory. `/^/gm`, `/$/gm`, `/\b/g` and `/\s*/g` all hang, which rules out
+  prefixing or suffixing every line through `replaceAll` at all. The same loop never reset `lastIndex`
+  either, so a regexp that had already been used resumed from where it stopped and silently skipped earlier
+  matches. Found by reading `_replaceRegexp` rather than from a report, and filed as
+  [#336](https://github.com/Rich-Harris/magic-string/issues/336). Fixed by matching what
+  `String.prototype.replace` does with an empty match, which is to insert at it. Verified by diffing 2,406
+  combinations of source, pattern and substitution against `master`: zero differences outside the cases
+  that previously hung or threw.
 - [`Shopify/flash-list#2444`](https://github.com/Shopify/flash-list/pull/2444) — the fix and the
   regression test for a P1 open since June. The diagnosis is not mine: the reporter of
   [#2307](https://github.com/Shopify/flash-list/issues/2307) traced it in full, down to the corrective
@@ -74,19 +100,6 @@ was someone else's I say so and the contribution is the fix and the test.
   stripped every quote *inside* the class value. `[stroke='#fff']` became `[stroke=#fff]`, which is not
   valid CSS, so the browser silently discarded the rule. Found by reading the CLI source rather than from
   a bug report. Verified over all 1,435 registry components: 1,404 byte-identical, zero regressions.
-- [`benjamn/recast#1442`](https://github.com/benjamn/recast/pull/1442) — `??` cannot be combined with `||`
-  or `&&` without parentheses, because the `CoalesceExpression` production admits only
-  `BitwiseORExpression` operands. recast decided parentheses by operator precedence, which covers a `??`
-  nested inside `||` but never a `||` nested inside `??`, so printing a `??` whose operand was a `||` or
-  `&&` emitted four shapes that are outright `SyntaxError`s. The report is someone else's; the cause and
-  the fix are mine. Every printed form now round-trips through `new Function`, and a second test locks in
-  that `??` beside a non-logical operator is still left alone.
-- [`benjamn/recast#1441`](https://github.com/benjamn/recast/pull/1441) — `lib/parser.ts` passed a literal
-  `ecmaVersion: 6` into every parser while reading each neighbouring value from the caller's options, which
-  silently overrode the acorn parser's own default. The acorn setup shown in recast's own README therefore
-  rejected object spread, `**`, `async`/`await` and optional catch binding. Now read from the options like
-  the values either side of it, and added to `Options` so it is typed and documented rather than reaching
-  some parsers by accident.
 - [`webpro-nl/knip#1960`](https://github.com/webpro-nl/knip/pull/1960) — exposes `defineConfig` on a
   `./config` entrypoint, so a config file can import it without the side effects of parsing the index
   module. The separate-entrypoint design is not mine: a commenter on the issue proposed it, with a reason
