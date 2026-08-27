@@ -37,6 +37,18 @@ was someone else's I say so and the contribution is the fix and the test.
   replaced over 20,880 generated operation sequences: 775 disagreed, every one a false positive, none after
   the fix. Shipped in [`1.2.2`](https://www.npmjs.com/package/magic-string/v/1.2.2), cut minutes after the
   merge, so the regression never reached a published version.
+- [`Rich-Harris/magic-string#335`](https://github.com/Rich-Harris/magic-string/pull/335) — `replace` and
+  `replaceAll` gathered matches by driving `exec` in a `while (true)` loop, and a zero-length match does not
+  advance `lastIndex`, so any global regexp that can match the empty string rematched at the same index
+  until the process ran out of memory. `/^/gm`, `/$/gm`, `/\b/g` and `/\s*/g` all hung, which ruled out
+  prefixing or suffixing every line through `replaceAll` at all. The same loop never reset `lastIndex`
+  either, so a regexp that had already been used resumed from where it stopped and silently skipped earlier
+  matches. Found by reading `_replaceRegexp` rather than from a report, and filed as
+  [#336](https://github.com/Rich-Harris/magic-string/issues/336). Fixed by doing what
+  `String.prototype.replace` does with an empty match, which is to insert at it. Verified by diffing 2,406
+  combinations of source, pattern and substitution against `master`: zero differences outside the cases
+  that previously hung or threw. Shipped in
+  [`1.2.3`](https://www.npmjs.com/package/magic-string/v/1.2.3), published five minutes after the merge.
 - [`postcss/postcss-selector-parser#330`](https://github.com/postcss/postcss-selector-parser/pull/330) —
   unclosed `[`, `(` and a trailing `|` threw a raw `TypeError` instead of the parser's own error. Shipped
   in [`7.1.5`](https://www.npmjs.com/package/postcss-selector-parser/v/7.1.5) — ~590M downloads a month.
@@ -72,17 +84,6 @@ was someone else's I say so and the contribution is the fix and the test.
 
 **In review**
 
-- [`Rich-Harris/magic-string#335`](https://github.com/Rich-Harris/magic-string/pull/335) — `replace` and
-  `replaceAll` gathered matches by driving `exec` in a `while (true)` loop, and a zero-length match does not
-  advance `lastIndex`, so any global regexp that can match the empty string rematched at the same index
-  until the process ran out of memory. `/^/gm`, `/$/gm`, `/\b/g` and `/\s*/g` all hang, which rules out
-  prefixing or suffixing every line through `replaceAll` at all. The same loop never reset `lastIndex`
-  either, so a regexp that had already been used resumed from where it stopped and silently skipped earlier
-  matches. Found by reading `_replaceRegexp` rather than from a report, and filed as
-  [#336](https://github.com/Rich-Harris/magic-string/issues/336). Fixed by matching what
-  `String.prototype.replace` does with an empty match, which is to insert at it. Verified by diffing 2,406
-  combinations of source, pattern and substitution against `master`: zero differences outside the cases
-  that previously hung or threw.
 - [`Shopify/flash-list#2444`](https://github.com/Shopify/flash-list/pull/2444) — the fix and the
   regression test for a P1 open since June. The diagnosis is not mine: the reporter of
   [#2307](https://github.com/Shopify/flash-list/issues/2307) traced it in full, down to the corrective
