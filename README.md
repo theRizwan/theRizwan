@@ -84,6 +84,19 @@ was someone else's I say so and the contribution is the fix and the test.
 
 **In review**
 
+- [`Rich-Harris/magic-string#340`](https://github.com/Rich-Harris/magic-string/pull/340) — `replace` and
+  `replaceAll` implemented three of the six `$` substitution patterns in the MDN table their own source
+  comment links to, and got one of the three wrong. Seven divergences from `String.prototype.replace` in
+  all, the worst being that `$1` for a capture group that did not participate in the match inserted the
+  literal text `undefined` into the output. That is silent corruption, and an optional group that does not
+  match is ordinary. `$0` also expanded to the whole match instead of staying literal, `$nn` never fell
+  back to `$n`, `$<name>`, `` $` `` and `$'` went unrecognised, and a string search value expanded nothing
+  at all, so `$$` behaved differently from the equivalent regexp. Found by reading `_replaceRegexp` rather
+  than from a report, and filed as [#341](https://github.com/Rich-Harris/magic-string/issues/341) with all
+  eight reproductions checked against the stock `1.2.3` build before filing. Verified with
+  `String.prototype` as the reference oracle: 32,902 of 136,000 comparisons disagreed on `master`, zero on
+  the branch. It changes one existing test expectation, which had pinned the `$nn` divergence, and the PR
+  says so.
 - [`Shopify/flash-list#2444`](https://github.com/Shopify/flash-list/pull/2444) — the fix and the
   regression test for a P1 open since June. The diagnosis is not mine: the reporter of
   [#2307](https://github.com/Shopify/flash-list/issues/2307) traced it in full, down to the corrective
