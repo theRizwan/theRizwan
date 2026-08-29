@@ -52,6 +52,12 @@ was someone else's I say so and the contribution is the fix and the test.
 - [`postcss/postcss-selector-parser#330`](https://github.com/postcss/postcss-selector-parser/pull/330) —
   unclosed `[`, `(` and a trailing `|` threw a raw `TypeError` instead of the parser's own error. Shipped
   in [`7.1.5`](https://www.npmjs.com/package/postcss-selector-parser/v/7.1.5) — ~590M downloads a month.
+- [`webpro-nl/knip#1960`](https://github.com/webpro-nl/knip/pull/1960) — `defineConfig` was reachable
+  only through the index module, so a config file importing it took on that module's side effects. Now
+  exposed on its own `./config` entrypoint. The separate-entrypoint design is not mine: a commenter on
+  the issue proposed it, with a reason neither of the two options I had offered covered. Shipped in
+  [`6.33.0`](https://www.npmjs.com/package/knip/v/6.33.0), the first release to contain it — ~55M
+  downloads a month.
 - [`corsairdev/corsair#111`](https://github.com/corsairdev/corsair/pull/111) — improved the Telegram
   integration plugin.
 
@@ -114,10 +120,6 @@ was someone else's I say so and the contribution is the fix and the test.
   stripped every quote *inside* the class value. `[stroke='#fff']` became `[stroke=#fff]`, which is not
   valid CSS, so the browser silently discarded the rule. Found by reading the CLI source rather than from
   a bug report. Verified over all 1,435 registry components: 1,404 byte-identical, zero regressions.
-- [`webpro-nl/knip#1960`](https://github.com/webpro-nl/knip/pull/1960) — exposes `defineConfig` on a
-  `./config` entrypoint, so a config file can import it without the side effects of parsing the index
-  module. The separate-entrypoint design is not mine: a commenter on the issue proposed it, with a reason
-  neither of the two options I had offered covered. ~53M downloads a month.
 - [`postcss/postcss-selector-parser#335`](https://github.com/postcss/postcss-selector-parser/pull/335) —
   attribute selectors with no valid attribute name threw a raw `TypeError`, or emitted the literal string
   `undefined` into CSS. Verified against 43,200 generated selectors.
