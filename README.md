@@ -90,6 +90,21 @@ was someone else's I say so and the contribution is the fix and the test.
 
 **In review**
 
+- [`TanStack/query#11360`](https://github.com/TanStack/query/pull/11360) fixes a regression in the
+  solid-query v6 read layer, where `removeQueries()` could not be made to stick. The layer keeps one version
+  signal per hook, bumped on every cache event carrying that hook's query hash, and a removal is such an
+  event, so the recompute it triggered ran the hook's query accessor, which calls `queryCache.build()`. That
+  call creates the entry whenever the cache does not hold it, so a hook's own removal notification rebuilt
+  exactly what the caller had just deleted. The refetch was a second-order effect: the re-created entry also
+  re-pointed the still-live observer, and it was that observer's mount-fetch policy that repopulated the
+  removed key. The reported case is a login boundary that removes every query on an identity change and so
+  cannot guarantee the previous user's data is unreadable. To settle the intended semantics rather than
+  guess at them, I ran the reporter's scenario against the react adapter on the same branch as a reference
+  oracle and matched the two field by field: cache event sequence, entry count, `getQueryData`, query
+  function call count and rendered value now agree exactly, where the release candidate differed on all
+  five. Two regression tests, both failing on the unpatched branch. The reproduction and the bisection to
+  rc.1 are the reporter's; the cause and the fix are mine. Confined to the `6.0.0-rc.1` pre-release, so the
+  stable 5.x line was never affected; `@tanstack/solid-query` is ~840K downloads a month.
 - [`Rich-Harris/magic-string#340`](https://github.com/Rich-Harris/magic-string/pull/340) — `replace` and
   `replaceAll` implemented three of the six `$` substitution patterns in the MDN table their own source
   comment links to, and got one of the three wrong. Seven divergences from `String.prototype.replace` in
