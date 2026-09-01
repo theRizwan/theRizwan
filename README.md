@@ -105,6 +105,20 @@ was someone else's I say so and the contribution is the fix and the test.
   five. Two regression tests, both failing on the unpatched branch. The reproduction and the bisection to
   rc.1 are the reporter's; the cause and the fix are mine. Confined to the `6.0.0-rc.1` pre-release, so the
   stable 5.x line was never affected; `@tanstack/solid-query` is ~840K downloads a month.
+- [`Rich-Harris/magic-string#342`](https://github.com/Rich-Harris/magic-string/pull/342) is the remaining
+  `String.prototype.replace` divergence noted in
+  [#340](https://github.com/Rich-Harris/magic-string/pull/340), split out as its own change.
+  `_replaceRegexp` passed `match.groups` as the trailing argument to a replacer on every call, where the
+  reference implementation passes it only when the pattern actually contains named capture groups. With no
+  named groups `match.groups` is `undefined`, so magic-string handed the replacer one argument more than
+  `String.prototype.replace` ever sends. A replacer with a fixed arity drops it and is unaffected, which is
+  why the existing offset test passed either way; a variadic one that reaches the offset or the source
+  string from the end of its argument list, the usual way to write one, got the source string where it
+  expected the offset and `undefined` where it expected the source. Found by reading `_replaceRegexp` rather
+  than from a report. Verified with two tests taken differentially against `String.prototype.replace` on the
+  same input, one pattern with a named group and one without: the second fails on `master` and passes on the
+  branch, the first guards against over-correcting. Lint, typecheck and all 264 tests pass, with CI green on
+  Linux, macOS and Windows.
 - [`Rich-Harris/magic-string#340`](https://github.com/Rich-Harris/magic-string/pull/340) — `replace` and
   `replaceAll` implemented three of the six `$` substitution patterns in the MDN table their own source
   comment links to, and got one of the three wrong. Seven divergences from `String.prototype.replace` in
