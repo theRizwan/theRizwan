@@ -63,6 +63,20 @@ was someone else's I say so and the contribution is the fix and the test.
 
 **Merged, not yet in a release**
 
+- [`errwischt/stacktrace-parser@dea87ba`](https://github.com/errwischt/stacktrace-parser/commit/dea87bac)
+  fixes a quadratic backtracking path in stack parsing. `geckoRe` and `javaScriptCoreRe` both opened with
+  `^\s*` followed immediately by a group that also matches whitespace, so a leading run of n spaces could be
+  divided between the prefix and the group in n ways, and any line that ultimately failed to match made the
+  engine try all of them. Cost was quadratic in the length of the leading whitespace. Measured against the
+  published `0.1.11` build: 14.9 ms at 2,000 spaces, 234.2 ms at 8,000, 3,295.5 ms at 30,000, close to 4x
+  per doubling, against 0.3 ms flat once the prefix comes off and the trimming moves to the point of use.
+  The input is attacker-influenced, because `err.stack` embeds the error message, and this parser sits under
+  React Native's redbox and much of the browser error-reporting ecosystem at ~78M downloads a month. Found
+  by reading the two regexes rather than from a report. The maintainer landed it as a direct commit instead
+  of merging the branch, so [the pull request](https://github.com/errwischt/stacktrace-parser/pull/50) reads
+  as closed and unmerged while the change sits on the default branch under my authorship. He also removed
+  the timing test that came with it, so nothing upstream guards the fix now. npm latest is still `0.1.11`,
+  published February 2025, and the published tarball still carries the old regexes, so this is not released.
 - [`benjamn/recast#1442`](https://github.com/benjamn/recast/pull/1442) — `??` cannot be combined with `||`
   or `&&` without parentheses, because the `CoalesceExpression` production admits only
   `BitwiseORExpression` operands. recast decided parentheses by operator precedence, which covers a `??`
@@ -157,7 +171,6 @@ was someone else's I say so and the contribution is the fix and the test.
 - [`postcss/postcss-selector-parser#337`](https://github.com/postcss/postcss-selector-parser/pull/337) —
   lossless mode dropped trailing whitespace when a selector ended before any node was created.
 - Fixes also pending review in [`hast-util-from-parse5`](https://github.com/syntax-tree/hast-util-from-parse5/pull/16),
-  [`stacktrace-parser`](https://github.com/errwischt/stacktrace-parser/pull/50),
   [`xml-js`](https://github.com/nashwaan/xml-js/pull/224) and
   [`eslint-plugin-react-native`](https://github.com/Intellicode/eslint-plugin-react-native/pull/342).
 
