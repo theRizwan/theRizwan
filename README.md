@@ -49,6 +49,49 @@ was someone else's I say so and the contribution is the fix and the test.
   combinations of source, pattern and substitution against `master`: zero differences outside the cases
   that previously hung or threw. Shipped in
   [`1.2.3`](https://www.npmjs.com/package/magic-string/v/1.2.3), published five minutes after the merge.
+- [`Rich-Harris/magic-string#340`](https://github.com/Rich-Harris/magic-string/pull/340) — `replace` and
+  `replaceAll` implemented three of the six `$` substitution patterns in the MDN table their own source
+  comment links to, and got one of the three wrong. Seven divergences from `String.prototype.replace` in
+  all, the worst being that `$1` for a capture group that did not participate in the match inserted the
+  literal text `undefined` into the output. That is silent corruption, and an optional group that does not
+  match is ordinary. `$0` also expanded to the whole match instead of staying literal, `$nn` never fell
+  back to `$n`, `$<name>`, `` $` `` and `$'` went unrecognised, and a string search value expanded nothing
+  at all, so `$$` behaved differently from the equivalent regexp. Found by reading `_replaceRegexp` rather
+  than from a report, and filed as [#341](https://github.com/Rich-Harris/magic-string/issues/341) with all
+  eight reproductions checked against the stock `1.2.3` build before filing. Verified with
+  `String.prototype` as the reference oracle: 32,902 of 136,000 comparisons disagreed on `master`, zero on
+  the branch. It changes one existing test expectation, which had pinned the `$nn` divergence, and the PR
+  says so. Shipped in [`1.3.1`](https://www.npmjs.com/package/magic-string/v/1.3.1), the first published
+  release to contain it: the `v1.3.0` tag that first carried the merge was never pushed to npm.
+- [`Rich-Harris/magic-string#342`](https://github.com/Rich-Harris/magic-string/pull/342) is the remaining
+  `String.prototype.replace` divergence noted in
+  [#340](https://github.com/Rich-Harris/magic-string/pull/340), split out as its own change.
+  `_replaceRegexp` passed `match.groups` as the trailing argument to a replacer on every call, where the
+  reference implementation passes it only when the pattern actually contains named capture groups. With no
+  named groups `match.groups` is `undefined`, so magic-string handed the replacer one argument more than
+  `String.prototype.replace` ever sends. A replacer with a fixed arity drops it and is unaffected, which is
+  why the existing offset test passed either way; a variadic one that reaches the offset or the source
+  string from the end of its argument list, the usual way to write one, got the source string where it
+  expected the offset and `undefined` where it expected the source. Found by reading `_replaceRegexp` rather
+  than from a report. Verified with two tests taken differentially against `String.prototype.replace` on the
+  same input, one pattern with a named group and one without: the second fails on `master` and passes on the
+  branch, the first guards against over-correcting. Lint, typecheck and all 264 tests pass, with CI green on
+  Linux, macOS and Windows. Shipped in [`1.3.1`](https://www.npmjs.com/package/magic-string/v/1.3.1).
+- [`Rich-Harris/magic-string#343`](https://github.com/Rich-Harris/magic-string/pull/343) — `indent()`
+  walked the original characters and each chunk's edited content, but never the `intro` and `outro` that
+  `appendLeft`, `appendRight`, `prependLeft` and `prependRight` attach to a chunk, so inserted content was
+  invisible to it. A line beginning inside an insert went unprefixed, and, worse, a line break inside an
+  insert did not register as a line break, so the original code after it silently lost its indent.
+  Wrapping a module the documented way, `prepend('(function () {\n')` then `append('\n}());')`, and
+  indenting the result, left the closing lines flush left. `append('\nZ')` came out unindented too,
+  because the "continuing a line" guard applied to every match instead of only the one at offset 0, which
+  `Bundle#indent` already had right for its own intro. Fixed with a single `indentPiece` helper applied to
+  the pieces in output order, intro, content, outro, so the next-character state stays accurate across
+  inserts. Verified against prefixing every line of the same MagicString's own `toString()`, over random
+  operation sequences on seven originals: 10,920 of 19,410 cases disagreed on `master`, zero on the
+  branch, and 3,603 hires sourcemaps generated after indenting carried no out-of-bounds segments. Nine
+  tests added, seven of them failing on `master`, with no existing expectation changed. Shipped in
+  [`1.3.1`](https://www.npmjs.com/package/magic-string/v/1.3.1), alongside the two fixes above.
 - [`postcss/postcss-selector-parser#330`](https://github.com/postcss/postcss-selector-parser/pull/330) —
   unclosed `[`, `(` and a trailing `|` threw a raw `TypeError` instead of the parser's own error. Shipped
   in [`7.1.5`](https://www.npmjs.com/package/postcss-selector-parser/v/7.1.5) — ~590M downloads a month.
@@ -119,33 +162,6 @@ was someone else's I say so and the contribution is the fix and the test.
   five. Two regression tests, both failing on the unpatched branch. The reproduction and the bisection to
   rc.1 are the reporter's; the cause and the fix are mine. Confined to the `6.0.0-rc.1` pre-release, so the
   stable 5.x line was never affected; `@tanstack/solid-query` is ~840K downloads a month.
-- [`Rich-Harris/magic-string#342`](https://github.com/Rich-Harris/magic-string/pull/342) is the remaining
-  `String.prototype.replace` divergence noted in
-  [#340](https://github.com/Rich-Harris/magic-string/pull/340), split out as its own change.
-  `_replaceRegexp` passed `match.groups` as the trailing argument to a replacer on every call, where the
-  reference implementation passes it only when the pattern actually contains named capture groups. With no
-  named groups `match.groups` is `undefined`, so magic-string handed the replacer one argument more than
-  `String.prototype.replace` ever sends. A replacer with a fixed arity drops it and is unaffected, which is
-  why the existing offset test passed either way; a variadic one that reaches the offset or the source
-  string from the end of its argument list, the usual way to write one, got the source string where it
-  expected the offset and `undefined` where it expected the source. Found by reading `_replaceRegexp` rather
-  than from a report. Verified with two tests taken differentially against `String.prototype.replace` on the
-  same input, one pattern with a named group and one without: the second fails on `master` and passes on the
-  branch, the first guards against over-correcting. Lint, typecheck and all 264 tests pass, with CI green on
-  Linux, macOS and Windows.
-- [`Rich-Harris/magic-string#340`](https://github.com/Rich-Harris/magic-string/pull/340) — `replace` and
-  `replaceAll` implemented three of the six `$` substitution patterns in the MDN table their own source
-  comment links to, and got one of the three wrong. Seven divergences from `String.prototype.replace` in
-  all, the worst being that `$1` for a capture group that did not participate in the match inserted the
-  literal text `undefined` into the output. That is silent corruption, and an optional group that does not
-  match is ordinary. `$0` also expanded to the whole match instead of staying literal, `$nn` never fell
-  back to `$n`, `$<name>`, `` $` `` and `$'` went unrecognised, and a string search value expanded nothing
-  at all, so `$$` behaved differently from the equivalent regexp. Found by reading `_replaceRegexp` rather
-  than from a report, and filed as [#341](https://github.com/Rich-Harris/magic-string/issues/341) with all
-  eight reproductions checked against the stock `1.2.3` build before filing. Verified with
-  `String.prototype` as the reference oracle: 32,902 of 136,000 comparisons disagreed on `master`, zero on
-  the branch. It changes one existing test expectation, which had pinned the `$nn` divergence, and the PR
-  says so.
 - [`Shopify/flash-list#2444`](https://github.com/Shopify/flash-list/pull/2444) — the fix and the
   regression test for a P1 open since June. The diagnosis is not mine: the reporter of
   [#2307](https://github.com/Shopify/flash-list/issues/2307) traced it in full, down to the corrective
