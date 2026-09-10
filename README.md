@@ -83,7 +83,7 @@ was someone else's I say so and the contribution is the fix and the test.
   invisible to it. A line beginning inside an insert went unprefixed, and, worse, a line break inside an
   insert did not register as a line break, so the original code after it silently lost its indent.
   Wrapping a module the documented way, `prepend('(function () {\n')` then `append('\n}());')`, and
-  indenting the result, left the closing lines flush left. `append('\nZ')` came out unindented too,
+  indenting the result, left the closing `}());` flush left. `append('\nZ')` came out unindented too,
   because the "continuing a line" guard applied to every match instead of only the one at offset 0, which
   `Bundle#indent` already had right for its own intro. Fixed with a single `indentPiece` helper applied to
   the pieces in output order, intro, content, outro, so the next-character state stays accurate across
