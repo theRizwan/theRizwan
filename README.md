@@ -21,13 +21,13 @@ was someone else's I say so and the contribution is the fix and the test.
   emitted a second pair. This broke recast's own documented `print(parse(source)) === source` identity on
   unmodified source. Verified across 5,076 generated inputs: 2,540 identity violations fixed, zero
   regressions. Shipped in
-  [`0.23.20`](https://www.npmjs.com/package/recast/v/0.23.20) — a package with ~148M downloads a month.
+  [`0.23.20`](https://www.npmjs.com/package/recast/v/0.23.20) — a package with ~144M downloads a month.
 - [`Rich-Harris/magic-string#326`](https://github.com/Rich-Harris/magic-string/pull/326) — two `move()`
   calls whose ranges overlapped spliced a chunk's `next` pointer to itself, so the list became a cycle and
   every later `toString()` or `generateMap()` spun forever on valid, in-bounds arguments. No error, just a
   hung build. Added the ordering check that throws instead, skipped behind a flag so a first move keeps
   costing nothing, and carried the flag through `clone()` since a clone inherits the reordering and hung
-  the same way. Shipped in [`1.2.1`](https://www.npmjs.com/package/magic-string/v/1.2.1) — ~740M downloads
+  the same way. Shipped in [`1.2.1`](https://www.npmjs.com/package/magic-string/v/1.2.1) — ~733M downloads
   a month, and the source-manipulation layer inside Vite and Rollup.
 - [`Rich-Harris/magic-string#331`](https://github.com/Rich-Harris/magic-string/pull/331) — a `hasChanged()`
   optimisation merged that morning compared each edited chunk against its own slice of the original, which
@@ -94,12 +94,12 @@ was someone else's I say so and the contribution is the fix and the test.
   [`1.3.1`](https://www.npmjs.com/package/magic-string/v/1.3.1), alongside the two fixes above.
 - [`postcss/postcss-selector-parser#330`](https://github.com/postcss/postcss-selector-parser/pull/330) —
   unclosed `[`, `(` and a trailing `|` threw a raw `TypeError` instead of the parser's own error. Shipped
-  in [`7.1.5`](https://www.npmjs.com/package/postcss-selector-parser/v/7.1.5) — ~590M downloads a month.
+  in [`7.1.5`](https://www.npmjs.com/package/postcss-selector-parser/v/7.1.5) — ~518M downloads a month.
 - [`webpro-nl/knip#1960`](https://github.com/webpro-nl/knip/pull/1960) — `defineConfig` was reachable
   only through the index module, so a config file importing it took on that module's side effects. Now
   exposed on its own `./config` entrypoint. The separate-entrypoint design is not mine: a commenter on
   the issue proposed it, with a reason neither of the two options I had offered covered. Shipped in
-  [`6.33.0`](https://www.npmjs.com/package/knip/v/6.33.0), the first release to contain it — ~55M
+  [`6.33.0`](https://www.npmjs.com/package/knip/v/6.33.0), the first release to contain it — ~50M
   downloads a month.
 - [`corsairdev/corsair#111`](https://github.com/corsairdev/corsair/pull/111) — improved the Telegram
   integration plugin.
@@ -114,7 +114,7 @@ was someone else's I say so and the contribution is the fix and the test.
   published `0.1.11` build: 14.9 ms at 2,000 spaces, 234.2 ms at 8,000, 3,295.5 ms at 30,000, close to 4x
   per doubling, against 0.3 ms flat once the prefix comes off and the trimming moves to the point of use.
   The input is attacker-influenced, because `err.stack` embeds the error message, and this parser sits under
-  React Native's redbox and much of the browser error-reporting ecosystem at ~78M downloads a month. Found
+  React Native's redbox and much of the browser error-reporting ecosystem at ~73M downloads a month. Found
   by reading the two regexes rather than from a report. The maintainer landed it as a direct commit instead
   of merging the branch, so [the pull request](https://github.com/errwischt/stacktrace-parser/pull/50) reads
   as closed and unmerged while the change sits on the default branch under my authorship. He also removed
@@ -143,7 +143,7 @@ was someone else's I say so and the contribution is the fix and the test.
   the imported module and cached, so the common case skips the work entirely. Landed on `main` as
   [`7828a5f`](https://github.com/import-js/eslint-plugin-import/commit/7828a5f7d98f4d49e39bd6b8028f98fd0d562b48);
   the pull request it came from reads as closed because the maintainer landed the commit directly rather
-  than merging the branch. ~246M downloads a month, unreleased as of the latest tag.
+  than merging the branch. ~215M downloads a month, unreleased as of the latest tag.
 
 **In review**
 
@@ -161,7 +161,84 @@ was someone else's I say so and the contribution is the fix and the test.
   function call count and rendered value now agree exactly, where the release candidate differed on all
   five. Two regression tests, both failing on the unpatched branch. The reproduction and the bisection to
   rc.1 are the reporter's; the cause and the fix are mine. Confined to the `6.0.0-rc.1` pre-release, so the
-  stable 5.x line was never affected; `@tanstack/solid-query` is ~840K downloads a month.
+  stable 5.x line was never affected; `@tanstack/solid-query` is ~1M downloads a month.
+- [`TanStack/router#8218`](https://github.com/TanStack/router/pull/8218) defers `useCanGoBack` to the
+  server value while hydrating, and closes [#8211](https://github.com/TanStack/router/issues/8211).
+  Start builds a fresh single-entry memory history per request, so `__TSR_index` is 0 and the SSR markup
+  says the router cannot go back. The browser preserves `history.state` across a reload, so refreshing a
+  page that was reached by navigation starts the client router at index 1, and the client branch read that
+  index during the hydration render, contradicting the server markup and producing a recoverable React
+  hydration error. The fix gates the client value on `useHydrated()`, the same approach `resolveIsActive`
+  already uses in `link.tsx` for hash matching. Worth recording because it nearly cost me the fix:
+  `useHydrated`'s own docstring claims it is false on the first client render, which would have broken the
+  two existing `useCanGoBack` tests that assert on first render. Probing it empirically shows the
+  docstring is wrong. A pure client render sees `[true]`, because React only consults `getServerSnapshot`
+  during an actual hydration pass, while hydration sees `[false, true]`. Deliberately React only:
+  solid-router and vue-router have the same shape, but their `useHydrated` equivalents really are false on
+  a first client-only render, so a naive gate there regresses SPA behaviour and needs the
+  `router.options.ssr` guard that solid's `link.tsx` uses. Said so in the PR and offered the follow-up.
+  `@tanstack/react-router` is ~82M downloads a month.
+- [`TanStack/router#8220`](https://github.com/TanStack/router/pull/8220) returns a `Response` to non-RPC
+  server function callers, and closes [#7745](https://github.com/TanStack/router/issues/7745). A native
+  form POST to `serverFn.url` does not send the `x-tsr-serverFn` header, and `handleServerAction` answered
+  that case with `return res.result || res.error`, a raw JS value. `handleCtxResult` only recognises
+  `Response`, redirect and `SsrResponse`, so `ctx.response` stayed unset and `getFinalResponse` threw
+  `ERR_NO_RESPONSE`, surfacing as an unhandled 500 telling the author their handler forgot to return a
+  response. Only handlers that already returned a `Response` worked at all. Bisected to `a289d71f3d`,
+  "fix: refactor middleware (#5517)", with `git log -S isServerFn`: before it there was no such shortcut
+  and every caller went through serialization. The fix restricts the shortcut to values that are already a
+  `Response`, which still covers redirects because `isRedirect` is `obj instanceof Response &&
+  !!obj.options`. Three cases fail on `main`: a plain object, nothing, and an error. Left the format
+  question open for maintainers rather than settling it inside a regression fix, since non-RPC callers now
+  get the pre-#5517 seroval `application/json` body and a non-redirect error is still a 200; offered plain
+  `Response.json` and a 500 as the alternatives.
+- [`TanStack/router#8221`](https://github.com/TanStack/router/pull/8221) falls back to the server function
+  on a static cache miss, closing [#7876](https://github.com/TanStack/router/issues/7876) and the failure
+  reported in [#7630](https://github.com/TanStack/router/issues/7630). The client half of
+  `staticFunctionMiddleware` fetched the derived cache URL with no checks at all,
+  `fetch(url).then((r) => r.json())`. A cache file only exists for calls the prerender pass executed, so
+  with prerendering disabled, or for a route the crawler never reached, the request is answered by the
+  app's catch-all with the HTML shell, and `r.json()` rejects with `Unexpected token '<'`, taking the
+  loader down instead of falling through. The fix treats a failed request, a non-ok status, a non-JSON
+  content type and an unparseable body all as a miss returning `undefined`, which the middleware already
+  handles through `ctx.next()`. The content type has to be checked as well as the status, because some
+  setups serve the shell with a 200. It also wires up `staticClientCache`, whose lookup was overwritten by
+  the fetch result on the next line and so never served anything. In review, CodeRabbit noted that
+  `fromJSON` can succeed for a payload that is not a `StaticCachedResult`, so `8bcd08d` adds a shape check
+  requiring both `result` and `context` as own properties. I probed all three round trips before taking
+  the suggestion, because requiring `context` would have regressed genuine hits if seroval dropped an
+  undefined key: plain non-seroval JSON already throws inside `fromJSON`, a seroval-encoded plain string
+  decodes to a truthy value and so was wrongly taken as a hit, and seroval does preserve both keys when
+  `sendContext` is undefined. Only the first half of the report is fixed. The second asks that SPA mode
+  populate the cache, which cannot work in general, because the SPA shell prerender only runs the root
+  route's loaders and the build cannot know what a client-only route will call. Said so rather than
+  promising it.
+- [`storybookjs/storybook#36146`](https://github.com/storybookjs/storybook/pull/36146) gives sidebar ids a
+  fallback for title parts made only of punctuation, fixing
+  [#32299](https://github.com/storybookjs/storybook/issues/32299).
+  `transformStoryIndexToStoriesHash` built each id as `sanitize(parent + '-' + part)`, and `sanitize`
+  strips punctuation, so a part that is only punctuation, such as a folder named `_`, gave an empty root id
+  at top level, which looked like the stories had been hoisted, and at depth gave an id equal to the
+  parent's, which tripped the existing `id === parentId` guard and broke the whole sidebar. The fix
+  sanitizes each part separately and falls back to the part's hex code points behind a `--` marker, so `_`
+  becomes `--5f`. The marker came out of review: a bare `5f` collided with a folder literally named `5f`.
+  `sanitize` collapses punctuation runs to a single `-` and trims the ends, so it can never emit `--`,
+  which also keeps the fallback clear of story ids (`<kind>--<name>`, both halves sanitized). Verified
+  id-preserving for every other input by a differential fuzz over 16,656 random parent/part pairs:
+  `sanitize(parent-part)` equals `parent-sanitize(part)` whenever the part sanitizes to non-empty, zero
+  mismatches. That is the argument that matters, because it is the reason the change cannot silently
+  renumber existing story URLs. Two new cases, and the full `src/manager-api` suite passes at 369 tests.
+  `storybook` is ~83M downloads a month.
+- [`storybookjs/storybook#36145`](https://github.com/storybookjs/storybook/pull/36145) adds `sourceUrl` and
+  `expanded` to the enabled `refs` type, fixing
+  [#32239](https://github.com/storybookjs/storybook/issues/32239). The enabled variant in
+  `core-common.ts` was `{ title: string; url: string }`, so the example on Storybook's own refs docs page
+  did not compile: `sourceUrl`, which the sidebar ref indicator reads, and `expanded`, documented as
+  optional and true by default, were present only on the disabled variant. Both are honoured at runtime,
+  so this was purely a type gap. Added both as optional fields plus a `core-common.test-d.ts` that compiles
+  the documented example and fails on unpatched `next` with "Object literal may only specify known
+  properties, and 'sourceUrl' does not exist in type". Type-level tests in this repo run through the core
+  project's vitest typecheck, so the file needs no separate runner.
 - [`Shopify/flash-list#2444`](https://github.com/Shopify/flash-list/pull/2444) — the fix and the
   regression test for a P1 open since June. The diagnosis is not mine: the reporter of
   [#2307](https://github.com/Shopify/flash-list/issues/2307) traced it in full, down to the corrective
