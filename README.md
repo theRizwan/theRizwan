@@ -101,6 +101,26 @@ was someone else's I say so and the contribution is the fix and the test.
   the issue proposed it, with a reason neither of the two options I had offered covered. Shipped in
   [`6.33.0`](https://www.npmjs.com/package/knip/v/6.33.0), the first release to contain it — ~50M
   downloads a month.
+- [`TanStack/query#11360`](https://github.com/TanStack/query/pull/11360) fixes a regression in the
+  solid-query v6 read layer, where `removeQueries()` could not be made to stick. The layer keeps one version
+  signal per hook, bumped on every cache event carrying that hook's query hash, and a removal is such an
+  event, so the recompute it triggered ran the hook's query accessor, which calls `queryCache.build()`. That
+  call creates the entry whenever the cache does not hold it, so a hook's own removal notification rebuilt
+  exactly what the caller had just deleted. The refetch was a second-order effect: the re-created entry also
+  re-pointed the still-live observer, and it was that observer's mount-fetch policy that repopulated the
+  removed key. The reported case is a login boundary that removes every query on an identity change and so
+  cannot guarantee the previous user's data is unreadable. To settle the intended semantics rather than
+  guess at them, I ran the reporter's scenario against the react adapter on the same branch as a reference
+  oracle and matched the two field by field: cache event sequence, entry count, `getQueryData`, query
+  function call count and rendered value now agree exactly, where rc.1 differed on all five. Two regression
+  tests, both failing on the unpatched branch. The reproduction and the bisection to rc.1 are the
+  reporter's; the cause and the fix are mine. Shipped in
+  [`6.0.0-rc.4`](https://www.npmjs.com/package/@tanstack/solid-query/v/6.0.0-rc.4), published seven hours
+  after the merge and the first release to contain it. On the published `rc.3` build a removal under a
+  mounted reader still fires `added` and a second fetch; on `rc.4` it fires only `removed`. That is a
+  release candidate on npm's `rc` tag: v6 has not had a stable release yet, and the regression only ever
+  existed in its release candidates, rc.1 to rc.3. The stable 5.x line was never affected, and it carries
+  almost all of `@tanstack/solid-query`'s ~1.2M downloads a month.
 - [`corsairdev/corsair#111`](https://github.com/corsairdev/corsair/pull/111) — improved the Telegram
   integration plugin.
 
@@ -147,21 +167,6 @@ was someone else's I say so and the contribution is the fix and the test.
 
 **In review**
 
-- [`TanStack/query#11360`](https://github.com/TanStack/query/pull/11360) fixes a regression in the
-  solid-query v6 read layer, where `removeQueries()` could not be made to stick. The layer keeps one version
-  signal per hook, bumped on every cache event carrying that hook's query hash, and a removal is such an
-  event, so the recompute it triggered ran the hook's query accessor, which calls `queryCache.build()`. That
-  call creates the entry whenever the cache does not hold it, so a hook's own removal notification rebuilt
-  exactly what the caller had just deleted. The refetch was a second-order effect: the re-created entry also
-  re-pointed the still-live observer, and it was that observer's mount-fetch policy that repopulated the
-  removed key. The reported case is a login boundary that removes every query on an identity change and so
-  cannot guarantee the previous user's data is unreadable. To settle the intended semantics rather than
-  guess at them, I ran the reporter's scenario against the react adapter on the same branch as a reference
-  oracle and matched the two field by field: cache event sequence, entry count, `getQueryData`, query
-  function call count and rendered value now agree exactly, where the release candidate differed on all
-  five. Two regression tests, both failing on the unpatched branch. The reproduction and the bisection to
-  rc.1 are the reporter's; the cause and the fix are mine. Confined to the `6.0.0-rc.1` pre-release, so the
-  stable 5.x line was never affected; `@tanstack/solid-query` is ~1M downloads a month.
 - [`TanStack/router#8218`](https://github.com/TanStack/router/pull/8218) defers `useCanGoBack` to the
   server value while hydrating, and closes [#8211](https://github.com/TanStack/router/issues/8211).
   Start builds a fresh single-entry memory history per request, so `__TSR_index` is 0 and the SSR markup
@@ -266,6 +271,24 @@ was someone else's I say so and the contribution is the fix and the test.
 - Fixes also pending review in [`hast-util-from-parse5`](https://github.com/syntax-tree/hast-util-from-parse5/pull/16),
   [`xml-js`](https://github.com/nashwaan/xml-js/pull/224) and
   [`eslint-plugin-react-native`](https://github.com/Intellicode/eslint-plugin-react-native/pull/342).
+
+## Reviewing
+
+- [`ReScience/submissions#113`](https://github.com/ReScience/submissions/issues/113#issuecomment-5559647550),
+  a reviewer report for [ReScience C](https://rescience.github.io), the peer-reviewed journal for
+  replications of computational research, on a C++ replication of a three-layer model for the flow of
+  particulate suspensions driven by sedimentation. I offered to cover two of the journal's four criteria,
+  reproducibility and code clarity, and left the numerics and the physics to a domain reviewer; the handling
+  editor took that part on as the second reviewer. The solver built warning-free under a strict `-Werror`
+  set on gcc 13.3 and Apple clang 21, and its output was byte-identical across runs and independent builds.
+  After reshaping the published dataset, the calibration script recovered the article's six fitted values,
+  four to the printed precision and the other two within 0.006, because the fit's error only moves in steps
+  of one grid cell and so is flat across a band of values. The shortfalls, across thirteen numbered
+  comments, are in packaging: no documented route from the data DOI to the calibration script, a Python
+  step that fails on stock macOS, plotting scripts that display rather than write, and no runnable source
+  for the article's own figures. Acknowledged by the editor in the thread. The author has since added run
+  instructions and plotting scripts, with which the editor reproduced the six figures, and the submission
+  is still in review.
 
 ## Packages
 
