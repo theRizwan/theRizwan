@@ -89,6 +89,13 @@ downloads/month)
   [#386](https://github.com/Rich-Harris/magic-string/pull/386): an empty-string replace, `update()` after
   `move()` deleting text, and `Bundle#indent` after an empty source. #384 fixes a regression from my own
   #366, found by my differential tester [twincheck](https://github.com/theRizwan/twincheck).
+- postcss-selector-parser: [#363](https://github.com/postcss/postcss-selector-parser/pull/363) property
+  tests the maintainer asked for, checking generated selectors against round-trip, `sourceIndex` and API
+  invariants with a list of known failures. It found three new bugs, one of them lossy output turning
+  `a |b` into `a|b`. [#358](https://github.com/postcss/postcss-selector-parser/pull/358) a pseudo's name
+  printed twice before a `|`, [#359](https://github.com/postcss/postcss-selector-parser/pull/359)
+  namespaced nodes starting after their namespace (1,062 harness failures before, 0 after). Two
+  constructor fixes, #360 and #361, are parked by the maintainer for the next major.
 - TanStack Router (~82M/month): [#8218](https://github.com/TanStack/router/pull/8218) hydration mismatch in
   `useCanGoBack`, [#8220](https://github.com/TanStack/router/pull/8220) server-function form posts
   returning a 500, bisected to #5517, [#8221](https://github.com/TanStack/router/pull/8221) a static cache
