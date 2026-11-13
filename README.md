@@ -60,6 +60,8 @@ downloads/month)
 - [knip#1960](https://github.com/webpro-nl/knip/pull/1960) (~50M/month): `defineConfig` on its own
   `./config` entrypoint, so config files skip the index module's side effects. The entrypoint design came
   from a commenter on the issue. Shipped in `6.33.0`.
+- [rolldown#11420](https://github.com/rolldown/rolldown/pull/11420) (~572M/month): rewriting `new URL()`
+  to an emitted asset dropped its `?query` and `#hash`. Shipped in `1.3.0`.
 - [TanStack Query#11360](https://github.com/TanStack/query/pull/11360): in solid-query v6, `removeQueries()`
   was undone by the hook's own removal event, which rebuilt the entry and refetched it. Matched the react
   adapter field by field as the reference. Reproduction and bisection were the reporter's. Shipped in
