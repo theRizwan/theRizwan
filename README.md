@@ -54,9 +54,12 @@ downloads/month)
 
 **Others**
 
-- [recast#1438](https://github.com/benjamn/recast/pull/1438) (~144M/month): a comment before a closing
+- [recast#1438](https://github.com/benjamn/recast/pull/1438) (~221M/month): a comment before a closing
   parenthesis made the printer add a second pair, breaking `print(parse(src)) === src`. 2,540 of 5,076
   generated inputs fixed, 0 regressions. Shipped in `0.23.20`.
+- [recast#1442](https://github.com/benjamn/recast/pull/1442): printing `??` with a `||` or `&&` operand
+  gave a `SyntaxError`. [recast#1441](https://github.com/benjamn/recast/pull/1441): a hardcoded
+  `ecmaVersion: 6` made the README's own acorn setup reject modern syntax. Both shipped in `0.24.1`.
 - [knip#1960](https://github.com/webpro-nl/knip/pull/1960) (~50M/month): `defineConfig` on its own
   `./config` entrypoint, so config files skip the index module's side effects. The entrypoint design came
   from a commenter on the issue. Shipped in `6.33.0`.
@@ -77,9 +80,6 @@ downloads/month)
   quadratic regex backtracking on leading whitespace in `err.stack`, 3.3 s at 30,000 spaces down to 0.3 ms.
   Landed as a direct commit, so [the PR](https://github.com/errwischt/stacktrace-parser/pull/50) reads as
   closed. npm latest is still `0.1.11`.
-- [recast#1442](https://github.com/benjamn/recast/pull/1442): printing `??` with a `||` or `&&` operand
-  gave a `SyntaxError`. [recast#1441](https://github.com/benjamn/recast/pull/1441): a hardcoded
-  `ecmaVersion: 6` made the README's own acorn setup reject modern syntax. Both on `master` after `0.24.0`.
 - [eslint-plugin-import@7828a5f](https://github.com/import-js/eslint-plugin-import/commit/7828a5f7d98f4d49e39bd6b8028f98fd0d562b48)
   (~215M/month): `no-cycle` crashed the whole lint run on a file path that does not resolve, such as an
   unsaved buffer. Landed as a direct commit, after `2.32.0`.
